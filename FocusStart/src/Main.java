@@ -28,13 +28,22 @@ public class Main {
             e.printStackTrace();
         }
 
-        Iterator iterator=inputList.iterator();
-        while (iterator.hasNext()){
-            checkLine((String) iterator.next());
+        Iterator iteratorInp=inputList.iterator();
+        while (iteratorInp.hasNext()){
+            checkLine((String) iteratorInp.next());
         }
         for(int[]arr:triangleList){
-            System.out.println(Arrays.toString(arr));
+            System.out.println(Arrays.toString(arr));// проверочка!!!!!!!!!!!!!!!!!!!!
         }
+        System.out.println();
+        Iterator iteratorTr=triangleList.iterator();
+        while(iteratorTr.hasNext()){
+            if(!checkTriangle((int[])iteratorTr.next()))iteratorTr.remove();
+        }
+        for(int[]arr:triangleList){
+            System.out.println(Arrays.toString(arr));// проверочка!!!!!!!!!!!!!!!!!!!!
+        }
+
     }
 
     static void checkLine(String str){
@@ -60,5 +69,16 @@ public class Main {
             }
         }
         triangleList.add(triangle);
+    }
+    static boolean checkTriangle(int[]triangle){
+        int a=calcLength(triangle[0],triangle[2],triangle[1],triangle[3]);
+        int b=calcLength(triangle[0],triangle[4],triangle[1],triangle[5]);
+        int c=calcLength(triangle[2],triangle[4],triangle[3],triangle[5]);
+        return (a==b||a==c||b==c);
+
+    }
+    static int calcLength(int xa,int xb,int ya,int yb){
+        int squareLength=(int)(Math.pow((xa-xb),2)+Math.pow((ya-yb),2));
+        return squareLength;
     }
 }
