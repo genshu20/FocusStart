@@ -3,6 +3,7 @@ import java.nio.file.*;
 import java.util.*;
 
 public class FileHandler {
+    private static final int MAX_COORD = (int)(Math.sqrt(Integer.MAX_VALUE/2)/2);//координаты по модулю должны быть не больше 16383
     private String inFileName;
     private String outFileName;
 
@@ -69,6 +70,7 @@ public class FileHandler {
             } catch (NumberFormatException e) {
                 return;
             }
+            if(Math.abs(triangle[i])>MAX_COORD)return;
         }
         triangleList.add(triangle);
     }
