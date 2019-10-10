@@ -1,5 +1,4 @@
 import java.io.*;
-import java.nio.file.*;
 import java.util.*;
 
 public class FileHandler {
@@ -7,7 +6,6 @@ public class FileHandler {
     private String inFileName;
     private String outFileName;
 
-    private List<String> inputList = new ArrayList<>();
     private List<int[]> triangleList = new ArrayList<>();
     private int areaMax;
 
@@ -28,51 +26,46 @@ public class FileHandler {
     public void setOutFilename(String outFilename) {
         this.outFileName = outFilename;
     }
-
     void process(){
-        readIn();
-        for(String str:inputList)addToTriangleList(str);
-
-        triangleList.removeIf((ints)->!checkTriangle(ints));
-
-        areaMax = calcArea(triangleList.get(0));
-
-        for(int[]ints:triangleList){
-            int area=calcArea(ints);
-            if(area>areaMax)areaMax=area;
-        }
-
-        triangleList.removeIf((ints)->calcArea(ints)!=areaMax);
-        writeOut();
-    }
-
-    private void readIn(){
         try {
-            Files.lines(Paths.get(inFileName)).forEach(inputList::add);
-        } catch (IOException e) {
+            FileInputStream fileInputStream=new FileInputStream(inFileName);
+            Scanner scanner=new Scanner(fileInputStream);
+            outer:
+            while (scanner.hasNextLine()){
+                String str=scanner.nextLine();
+                String[] arrStr = str.split(" ");
+                List<String> arrStrList = new ArrayList<>(Arrays.asList(arrStr));
+
+                arrStrList.removeIf((s)->s.equals(""));
+
+                if (arrStrList.size() != 6) continue;
+
+                int[] triangle = new int[6];
+
+                for (int i = 0; i < 6; i++) {
+                    String s = arrStrList.get(i).trim();
+                    try {
+                        triangle[i] = Integer.parseInt(s);
+                    } catch (NumberFormatException e) {
+                        continue outer;
+                    }
+                    if(Math.abs(triangle[i])>MAX_COORD)continue outer;
+                }
+
+                if(!checkTriangle(triangle))continue ;
+                int doubleArea=calcDoubleArea(triangle);
+                if(doubleArea>=areaMax&&doubleArea!=0){
+                    if(!checkForDuplication(triangle)){
+                        areaMax=doubleArea;
+                        triangleList.add(triangle);
+                    }
+                    triangleList.removeIf((ints)->calcDoubleArea(ints)<areaMax);
+                }
+            }
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-    private void addToTriangleList(String str){
-        String[] arrStr = str.split(" ");
-        List<String> arrStrList = new ArrayList<>(Arrays.asList(arrStr));
-
-        arrStrList.removeIf((s)->s.equals(""));
-
-        if (arrStrList.size() != 6) return;
-
-        int[] triangle = new int[6];
-
-        for (int i = 0; i < 6; i++) {
-            String s = arrStrList.get(i).trim();
-            try {
-                triangle[i] = Integer.parseInt(s);
-            } catch (NumberFormatException e) {
-                return;
-            }
-            if(Math.abs(triangle[i])>MAX_COORD)return;
-        }
-        triangleList.add(triangle);
+        writeOut();
     }
     private boolean checkTriangle(int[]triangle){
         int a = calcLength(triangle[0], triangle[2], triangle[1], triangle[3]);
@@ -83,9 +76,15 @@ public class FileHandler {
     private int calcLength(int xa, int xb, int ya, int yb) {
         return  (int)(Math.pow((xa - xb), 2) + Math.pow((ya - yb), 2));
     }
-    private int calcArea(int[] triangle) {
+    private int calcDoubleArea(int[] triangle) {
         return Math.abs((triangle[2] - triangle[0]) * (triangle[5] - triangle[1]) -
                 (triangle[4] - triangle[0]) * (triangle[3] - triangle[1]));
+    }
+    private boolean checkForDuplication(int[]arrInt){
+        for(int[]ai:triangleList){
+            if(Arrays.equals(arrInt,ai))return true;
+        }
+        return false;
     }
     private void writeOut() {
         try {
@@ -96,8 +95,9 @@ public class FileHandler {
                     str = String.format("%s%s ", str, x);
                 }
                 fileWriter.write(str + "\n");
-                fileWriter.flush();
+
             }
+            fileWriter.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
