@@ -1,5 +1,5 @@
 import java.io.*;
-
+// за 2 часа генерирует 13ГБ файл с равнобедренными треугольниками, программа с ним за 15 мин справляется
 public class Generator {
     public static void main(String[] args) {
         try {
