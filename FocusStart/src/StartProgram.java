@@ -1,4 +1,4 @@
-public class Main {
+public class StartProgram {
 
     public static void main(String[] args) {
         String inFileName = args[0];
