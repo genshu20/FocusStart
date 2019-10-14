@@ -1,4 +1,6 @@
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class FileHandler {
@@ -33,12 +35,21 @@ public class FileHandler {
 
     void process() {
         try {
-            FileInputStream fileInputStream = new FileInputStream(inFileName);
-            Scanner scanner = new Scanner(fileInputStream);
+ //           FileInputStream fileInputStream = new FileInputStream(inFileName);
+ //           File file=new File(inFileName);
+ //           Path path= Paths.get(inFileName);
+ //           Scanner scanner = new Scanner(path);
+            FileReader fileReader=new FileReader(inFileName);
+            BufferedReader bufferedReader=new BufferedReader(fileReader);
+            String str=bufferedReader.readLine();
             outer:
-            while (scanner.hasNextLine()) {
-                String str = scanner.nextLine(); // получаем исходную строку
+            while (str!=null) {
+ //               String str = scanner.nextLine(); // получаем исходную строку
+
                 String[] arrStr = str.split(" "); // превращаем её в массив из фрагментов обозначающих координаты
+
+                str=bufferedReader.readLine();
+
                 List<String> arrStrList = new ArrayList<>(Arrays.asList(arrStr)); /* превращаем массив в ArrayList,
                 чтобы удалить пустые элементы */
 
@@ -66,7 +77,7 @@ public class FileHandler {
                     maxTriangle = triangle;
                 }
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             System.out.println("Не найден файл с исходными данными");
         }
         writeOut(maxTriangle); // печатаем координаты треугольника с максимальной площадью
@@ -100,7 +111,7 @@ public class FileHandler {
                 fileWriter.flush();
             }
         } catch (IOException e) {
-            System.out.println("Не возможно записать файл "+ outFileName);
+            System.out.println("Невозможно записать файл "+ outFileName);
         }
     }
 }
