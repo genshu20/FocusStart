@@ -2,6 +2,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class FileHandler {
     private static final int MAX_COORD = (int) (Math.sqrt(Integer.MAX_VALUE / 2) / 2); /*координаты по модулю должны
@@ -53,14 +54,20 @@ public class FileHandler {
                 List<String> arrStrList = new ArrayList<>(Arrays.asList(arrStr)); /* превращаем массив в ArrayList,
                 чтобы удалить пустые элементы */
 
-                arrStrList.removeIf((s) -> s.equals("")); // удаляем пустые элементы
+    //            arrStrList.removeIf((s) -> s.equals("")); // удаляем пустые элементы
+                arrStrList.removeIf(new Predicate<String>() {
+                    @Override
+                    public boolean test(String s) {
+                        return s.equals("");
+                    }
+                });
 
                 if (arrStrList.size() != 6) continue; // отбрасываем массив, если количество координат некорректно
 
                 int[] triangle = new int[6]; // создаём массив для хранения координат треугольника в формате int
 
                 for (int i = 0; i < 6; i++) { // заполняем массив данными, при обнаружении некорректных символов отбрасываем его
-                    String s = arrStrList.get(i).trim();
+                    String s = arrStrList.get(i).trim();// trim не нужен
                     try {
                         triangle[i] = Integer.parseInt(s);
                     } catch (NumberFormatException e) {
@@ -101,14 +108,17 @@ public class FileHandler {
 
     private void writeOut(int[] triangle) {
         try {
-            FileWriter fileWriter = new FileWriter(outFileName);
+  //          FileWriter fileWriter = new FileWriter(outFileName);
+  //          PrintWriter fileWriter = new PrintWriter(outFileName);
+            PrintStream fileWriter = new PrintStream(outFileName);
             if (triangle != null) {
                 String str = "";
                 for (int x : triangle) {
                     str = String.format("%s%s ", str, x);
                 }
-                fileWriter.write(str);
-                fileWriter.flush();
+ //               fileWriter.write(str);
+                fileWriter.print(str);
+ //               fileWriter.flush(); // для PrintStream не нужно, почему-то
             }
         } catch (IOException e) {
             System.out.println("Невозможно записать файл "+ outFileName);
